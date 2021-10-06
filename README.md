@@ -12,3 +12,11 @@
 * 2h | Building custom module
   * I have used native PHP functions to get desired outcome, but perhaps it'd be more suitable
     to use dedicated Drupal functions, especially to handle timezones.
+
+## Tl;dr
+* I have expected more issues, but it was quite a straightforward task. There is not much code and I have a feeling something is missing
+* Git commits could've been more granulated, but since there is not much code, I think its not a big mistake.
+* I could've read more documentation to learn about underlying Drupal architecture
+* Outdated docs really got to me
+* Overall I enjoyed the task
+
