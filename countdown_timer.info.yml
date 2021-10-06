@@ -1,0 +1,8 @@
+name: Countdown timer
+description: Calculate & show time until next event
+package: Custom
+
+type: module
+core_version_requirement: 9.x
+
+configure: countdown_timer.settings
