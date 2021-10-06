@@ -3,26 +3,7 @@
 namespace Drupal\countdown_timer\Services;
 
 use DateTime;
-use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Block\BlockBase;
-use Drupal\Core\Session\AccountInterface;
 
-/**
- * Provides a 'Countdown' Block.
- *
- * @Block(
- *   id = "countdown_block",
- *   admin_label = @Translation("Countdown block"),
- *   category = @Translation("Countdown block"),
- *   context = {
- *     "node" = @ContextDefinition("entity:node", required = FALSE)
- *   },
- *   context_definitions = {
- *     "node" = @ContextDefinition("entity:node", label = @Translation("Node"))
- *   }
- * )
- *
- */
 class CalculateDateDiff {
 
   /**
@@ -48,6 +29,12 @@ class CalculateDateDiff {
     return $this->parseDateDifference($dtDifference);
   }
 
+  /**
+   * Parse dateDifference from DateInterval
+   *
+   * @param \DateInterval $dtDifference
+   * @return string
+   */
   private function parseDateDifference(\DateInterval $dtDifference) : string{
     if ($dtDifference->invert === 0) {
       return 'This event already passed.';
