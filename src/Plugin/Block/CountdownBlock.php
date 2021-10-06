@@ -5,7 +5,10 @@ namespace Drupal\countdown_timer\Plugin\Block;
 use DateTime;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Block\BlockBase;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\countdown_timer\Services\CalculateDateDiff;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a 'Countdown' Block.
@@ -23,15 +26,33 @@ use Drupal\Core\Session\AccountInterface;
  * )
  *
  */
-class CountdownBlock extends BlockBase {
+class CountdownBlock extends BlockBase implements ContainerFactoryPluginInterface {
+
+  /**
+   * @var CalculateDateDiff
+   */
+  private $dateDiffCalculator;
+
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, $dateCalculator) {
+    parent::__construct($configuration,$plugin_id,$plugin_definition);
+    $this->dateDiffCalculator = $dateCalculator;
+  }
+
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('calculate_date_diff')
+    );
+  }
 
   /**
    * {@inheritdoc}
    */
   public function build() {
-    /** @var Entity/Node $node */
     $node = \Drupal::routeMatch()->getParameter('node');
-    if ( $node == NULL || $node->getType() != 'event') {
+    if ($node == NULL || $node->getType() != 'event') {
       // This is fail safe check in case the block on Drupal admin side is not set to show only on
       // Event content types.
       return;
@@ -39,25 +60,11 @@ class CountdownBlock extends BlockBase {
 
     $eventDateTimeString = $node->get('field_date')->getValue()[0]['value'];
     $eventDateTime = new DateTime($eventDateTimeString);
-    $dtDifference = $eventDateTime->diff(new DateTime());
 
-    if ($dtDifference->invert === 0) {
-      return [
-        '#markup' => $this->t('This event already passed.'),
-      ];
-    }
-
-    if ($dtDifference->days < 1) {
-      return [
-        '#markup' => $this->t('This event is happening today.'),
-      ];
-    } else {
-      return [
-        '#markup' => $this->t($dtDifference->days . ' days left until event starts.'),
-      ];
-    }
+    return [
+      '#markup' => $this->t($this->dateDiffCalculator->calculate($eventDateTime)),
+    ];
   }
-
 
   /**
    * {@inheritdoc}
@@ -65,5 +72,4 @@ class CountdownBlock extends BlockBase {
   public function getCacheMaxAge() {
     return 0;
   }
-
 }

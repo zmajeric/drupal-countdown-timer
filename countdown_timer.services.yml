@@ -1,0 +1,3 @@
+services:
+  calculate_date_diff:
+    class: Drupal\countdown_timer\Services\CalculateDateDiff
